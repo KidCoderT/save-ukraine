@@ -52,7 +52,7 @@ paths = [
 
 
 class Enemy:
-    def __init__(self, speed, health, filename):
+    def __init__(self, speed, health, filename, damage):
         self.path = choice(paths)
         self.next = 1
         self.cx, self.cy = self.path[0][0], self.path[0][1]
@@ -66,6 +66,7 @@ class Enemy:
         self.health = health
         self.tile_size = 32
         self.scale = 1.0
+        self.barrier_damage = damage
 
         self.damaged = False
         self.knockback = False
@@ -104,9 +105,9 @@ class Enemy:
                 self.next += 1
 
             if self.health < 1:
-                return True
+                return "reg"
         except:
-            return True
+            return "hit"
 
     def render(self, surf):
         image = self.image
@@ -154,9 +155,9 @@ class Enemy:
 
 class Zombie(Enemy):
     def __init__(self):
-        super().__init__(speed=1.8, health=10, filename="assets/images/enemies/zombie.png")
+        super().__init__(speed=1.8, health=10, filename="assets/images/enemies/zombie.png", damage=10)
 
 
 class Soldier(Enemy):
     def __init__(self):
-        super().__init__(speed=1.5, health=15, filename="assets/images/enemies/soldier.png")
+        super().__init__(speed=1.5, health=15, filename="assets/images/enemies/soldier.png", damage=30)
