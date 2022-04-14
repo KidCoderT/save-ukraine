@@ -81,7 +81,10 @@ class Enemy:
             self.image = img
         try:
             inc = 0.2 if self.knockback else 0
-            diff_x, diff_y = self.path[self.next][0] - self.cx, self.path[self.next][1] - self.cy
+            diff_x, diff_y = (
+                self.path[self.next][0] - self.cx,
+                self.path[self.next][1] - self.cy,
+            )
             if diff_x > 0:
                 self.cx += self.speed - inc
                 self.direction = "RIGHT"
@@ -99,7 +102,10 @@ class Enemy:
                 self.knockback = False
 
             min_ = 0.4
-            if abs(self.cx - self.path[self.next][0]) <= min_ and abs(self.cy - self.path[self.next][1]) <= min_:
+            if (
+                abs(self.cx - self.path[self.next][0]) <= min_
+                and abs(self.cy - self.path[self.next][1]) <= min_
+            ):
                 self.cx = self.path[self.next][0]
                 self.cy = self.path[self.next][1]
                 self.next += 1
@@ -155,9 +161,16 @@ class Enemy:
 
 class Zombie(Enemy):
     def __init__(self):
-        super().__init__(speed=1.8, health=10, filename="assets/images/enemies/zombie.png", damage=10)
+        super().__init__(
+            speed=1.8, health=10, filename="assets/images/enemies/zombie.png", damage=10
+        )
 
 
 class Soldier(Enemy):
     def __init__(self):
-        super().__init__(speed=1.5, health=15, filename="assets/images/enemies/soldier.png", damage=30)
+        super().__init__(
+            speed=1.5,
+            health=15,
+            filename="assets/images/enemies/soldier.png",
+            damage=15,
+        )

@@ -3,7 +3,7 @@ import pygame
 from utils import *
 from enemies import Soldier, Zombie
 from tilemap import TileMap
-from healthbar import BasicHealthBar
+from healthbar import AnimHealthBar, BasicHealthBar
 import random
 
 pygame.init()
@@ -22,6 +22,8 @@ tilemap = TileMap("assets/tileset/map.tmx")
 road = tilemap.get_layer(2)
 blocked = tilemap.get_layer(1)
 mouse_file = "assets/images/mouse.png"
+coin_img_file = "assets/images/coins.png"
+killed_counter_img_file = "assets/images/KILLED.png"
 
 
 class Level:
@@ -43,11 +45,26 @@ class Level:
 
         # Info Place
         self.info_rect = pygame.Rect(cell_size * 40, 0, cell_size * 15, cell_size * 30)
+
+        self.shop_bg = pygame.Rect(
+            0, 0, self.info_rect.width * 0.87, self.info_rect.height * 0.6
+        )
         self.bg_offset = 0
 
-        self.barrier_health = BasicHealthBar(
-            32 * 15 * 0.9, 32 * 15 * 0.9 * 0.14, 500, 32 * 47.5, 50, 1, (38, 238, 83)
+        self.barrier_health = AnimHealthBar(
+            32 * 15 * 0.95,
+            32 * 15 * 0.9 * 0.14,
+            500,
+            32 * 47.5,
+            50,
+            1,
+            (38, 238, 83),
+            1,
         )
+        self.coin = load_img(coin_img_file)
+        self.coin_icon_rect = self.coin.get_rect()
+        self.killed_icon = load_img(killed_counter_img_file)
+        self.killed_icon_rect = self.killed_icon.get_rect()
 
         self._resize_images()
 
@@ -60,6 +77,17 @@ class Level:
         self.info_rect.x = cell_size * 40
         self.info_rect.width = cell_size * 15
         self.info_rect.height = cell_size * 30
+
+        self.shop_bg.width = int(self.info_rect.width * 0.87)
+        self.shop_bg.height = int(self.info_rect.height * 0.65)
+        self.shop_bg.centerx = self.info_rect.centerx
+        self.shop_bg.centery = int(self.info_rect.centery)
+
+        self.coin = transform_img(coin_img_file, self.scale)
+        self.coin_icon_rect = self.coin.get_rect()
+
+        self.killed_icon = transform_img(killed_counter_img_file, self.scale)
+        self.killed_icon_rect = self.killed_icon.get_rect()
 
         self.DISPLAY = pygame.Surface((cell_size * 40, cell_size * 30))
 
@@ -123,26 +151,30 @@ class Level:
                 int(self.scale * 5),
             )
 
-            # total_healthbar_width = self.info_rect.width * 0.90
-            # healthbar_bg = pygame.Rect(
-            #     0, 0, total_healthbar_width, total_healthbar_width * 0.14
-            # )
-            # healthbar_bg.centerx = self.info_rect.centerx
-            # healthbar_bg.centery = int(50 * self.scale)
-
-            # health_percent = 94 / 100
-            # healthbar_health = pygame.Rect(
-            #     healthbar_bg.x,
-            #     healthbar_bg.y,
-            #     total_healthbar_width * health_percent,
-            #     healthbar_bg.height,
-            # )
-
-            # pygame.draw.rect(DISPLAY, (255, 255, 255), healthbar_bg)
-            # pygame.draw.rect(DISPLAY, (38, 238, 83), healthbar_health)
-            # pygame.draw.rect(DISPLAY, (0, 0, 0), healthbar_bg, int(5 * self.scale))
-
             self.barrier_health.render(DISPLAY, self.scale)
+
+            self.coin_icon_rect.centerx = int(self.info_rect.x + 50 * self.scale)
+            self.coin_icon_rect.centery = int(
+                self.barrier_health.bg_rect.bottom + 45 * self.scale
+            )
+
+            DISPLAY.blit(self.coin, self.coin_icon_rect.topleft)
+
+            self.killed_icon_rect.x = int(self.coin_icon_rect.right + 120 * self.scale)
+            self.killed_icon_rect.centery = self.coin_icon_rect.centery
+
+            DISPLAY.blit(self.killed_icon, self.killed_icon_rect.topleft)
+
+            pygame.draw.rect(
+                DISPLAY, (97, 95, 212), self.shop_bg, border_radius=int(40 * self.scale)
+            )
+            pygame.draw.rect(
+                DISPLAY,
+                (0, 0, 0),
+                self.shop_bg,
+                int(9 * self.scale),
+                int(40 * self.scale),
+            )
 
             DISPLAY.blit(self.mouse, self.mouse_rect.topleft)
             pygame.display.update()
