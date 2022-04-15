@@ -2,3 +2,4 @@
 old-game/*
 __pycache__
 venv/*
+output/*

@@ -8,16 +8,23 @@ def load_img(filename: str):
     return img
 
 
-def transform_img(img: pygame.Surface | str, size: tuple | float):
-    if isinstance(size, float):
+def transform_img(img: pygame.surface.Surface | str, size: tuple | float):
+    if isinstance(size, float) and isinstance(img, str):
         n_img = load_img(img)
         new_w = n_img.get_width() * size
         new_h = n_img.get_height() * size
         n_img = pygame.transform.scale(n_img, (new_w, new_h))
         n_img.convert()
         return n_img
+    elif isinstance(size, float):
+        n_img = img
+        new_w = n_img.get_width() * size  # type: ignore
+        new_h = n_img.get_height() * size  # type: ignore
+        n_img = pygame.transform.scale(n_img, (new_w, new_h))  # type: ignore
+        n_img.convert()
+        return n_img
 
-    n_img = pygame.transform.scale(img, size)
+    n_img = pygame.transform.scale(img, size)  # type: ignore
     n_img.convert()
     return n_img
 

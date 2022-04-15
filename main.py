@@ -25,6 +25,8 @@ mouse_file = "assets/images/mouse.png"
 coin_img_file = "assets/images/coins.png"
 killed_counter_img_file = "assets/images/KILLED.png"
 
+UI_font = pygame.font.Font("assets/fonts/BungeeFont/Bungee-Regular.ttf", 32)
+
 
 class Level:
     def __init__(self, DISPLAY, Clock):
@@ -61,10 +63,16 @@ class Level:
             (38, 238, 83),
             1,
         )
+
+        self.ui_font_size = int(32 * self.scale)
+
         self.coin = load_img(coin_img_file)
         self.coin_icon_rect = self.coin.get_rect()
+        self.money = 0
+
         self.killed_icon = load_img(killed_counter_img_file)
         self.killed_icon_rect = self.killed_icon.get_rect()
+        self.killed = 0
 
         self._resize_images()
 
@@ -82,6 +90,8 @@ class Level:
         self.shop_bg.height = int(self.info_rect.height * 0.65)
         self.shop_bg.centerx = self.info_rect.centerx
         self.shop_bg.centery = int(self.info_rect.centery)
+
+        self.ui_font_size = int(32 * self.scale)
 
         self.coin = transform_img(coin_img_file, self.scale)
         self.coin_icon_rect = self.coin.get_rect()
@@ -142,6 +152,8 @@ class Level:
                 self.rand_pause = random.randint(-10, 200)
 
             DISPLAY.blit(self.DISPLAY, (0, 0))
+
+            # Info Panel ------------------------------------------
             pygame.draw.rect(DISPLAY, (36, 175, 66), self.info_rect)
             pygame.draw.line(
                 DISPLAY,
@@ -157,14 +169,13 @@ class Level:
             self.coin_icon_rect.centery = int(
                 self.barrier_health.bg_rect.bottom + 45 * self.scale
             )
-
             DISPLAY.blit(self.coin, self.coin_icon_rect.topleft)
 
-            self.killed_icon_rect.x = int(self.coin_icon_rect.right + 120 * self.scale)
+            self.killed_icon_rect.x = int(self.coin_icon_rect.right + 130 * self.scale)
             self.killed_icon_rect.centery = self.coin_icon_rect.centery
-
             DISPLAY.blit(self.killed_icon, self.killed_icon_rect.topleft)
 
+            # The Shop ----------------------------------------------------------------
             pygame.draw.rect(
                 DISPLAY, (97, 95, 212), self.shop_bg, border_radius=int(40 * self.scale)
             )
@@ -176,6 +187,28 @@ class Level:
                 int(40 * self.scale),
             )
 
+            # Panel Text -------------------------------------------------
+            self.money_text = UI_font.render(
+                ": " + str(self.money).rjust(4, "0"), True, (255, 255, 255)
+            )
+            self.money_text = transform_img(self.money_text, self.scale)
+
+            self.money_text_rect = self.money_text.get_rect()
+            self.money_text_rect.centery = self.coin_icon_rect.centery
+            self.money_text_rect.x = int(self.coin_icon_rect.right + 8 * self.scale)
+            DISPLAY.blit(self.money_text, self.money_text_rect.topleft)
+
+            self.killed_text = UI_font.render(
+                ": " + str(self.killed).rjust(3, "0"), True, (255, 255, 255)
+            )
+            self.killed_text = transform_img(self.killed_text, self.scale)
+
+            self.killed_text_rect = self.killed_text.get_rect()
+            self.killed_text_rect.centery = self.killed_icon_rect.centery
+            self.killed_text_rect.x = int(self.killed_icon_rect.right + 8 * self.scale)
+            DISPLAY.blit(self.killed_text, self.killed_text_rect.topleft)
+
+            # The Mouse
             DISPLAY.blit(self.mouse, self.mouse_rect.topleft)
             pygame.display.update()
             clock.tick(60)
